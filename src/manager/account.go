@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 	"time"
 	"types"
 	"utils"
@@ -89,12 +90,22 @@ func (am AccountManager) GetAllAccounts(db *db.MySQL) (*[]types.Account, error) 
 }
 
 //GetAccounts - returns all accounts with the role given
-func (am AccountManager) GetAccounts(role int, db *db.MySQL) (*[]types.Account, error) {
-	stmt, err := db.PreparedQuery("SELECT * FROM users WHERE role = ? ORDER BY name ASC")
-	if err != nil {
-		return nil, err
+func (am AccountManager) GetAccounts(roles []int, db *db.MySQL) (*[]types.Account, error) {
+
+	if len(roles) <= 0 {
+		return nil, errors.New("Roles array is empty")
 	}
-	rows, err := stmt.Query(role)
+
+	query := "SELECT * FROM users WHERE role = '" + strconv.Itoa(roles[0]) + "'"
+
+	for i, r := range roles {
+		if i == 0 {
+			continue
+		}
+		query += " OR role = '" + strconv.Itoa(r) + "'"
+	}
+
+	rows, err := db.SimpleQuery(query + " ORDER BY name ASC")
 	if err != nil {
 		return nil, err
 	}

@@ -323,7 +323,7 @@ func (router Router) getAccounts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	accounts, err := router.Auth.GetAccounts(router.getSession(r), request.Role)
+	accounts, err := router.Auth.GetAccounts(router.getSession(r), request.Roles)
 	if err != nil {
 		go router.Log.LogError(logw.Error{Message: err.Error()})
 		router.badRequest(w)

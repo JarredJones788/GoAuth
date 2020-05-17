@@ -176,7 +176,7 @@ func (auth Authenticate) GetAllAccounts(session *types.Session) (*[]types.Accoun
 }
 
 //GetAccounts - returns accounts from the role given
-func (auth Authenticate) GetAccounts(session *types.Session, role int) (*[]types.Account, error) {
+func (auth Authenticate) GetAccounts(session *types.Session, roles []int) (*[]types.Account, error) {
 	account, err := auth.CheckAccountSession(session)
 	if err != nil {
 		return nil, err
@@ -185,12 +185,12 @@ func (auth Authenticate) GetAccounts(session *types.Session, role int) (*[]types
 	//Get Account Roles
 	account = account.GetAccountPermissions()
 
-	//Only Accounts with ADMIN privliges can make this request
+	//Only Accounts with REGIONAL_SUPERVISOR privliges can make this request
 	if !utils.Contains("ADMIN", account.Roles) {
 		return nil, errors.New("Invalid Privilges: " + account.Name)
 	}
 
-	accounts, err := manager.AccountManager{}.GetAccounts(role, auth.DB)
+	accounts, err := manager.AccountManager{}.GetAccounts(roles, auth.DB)
 	if err != nil {
 		return nil, err
 	}
